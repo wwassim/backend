@@ -7,6 +7,8 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const dotenv = require("dotenv");
 const UserRoute = require("./routes/UserRoute.js");
 const AuthRoute = require("./routes/AuthRoute.js");
+const AffectationRoute = require("./routes/AffectationRoute.js");
+const { seedRoles } = require("./controllers/Roles.js");
 
 dotenv.config();
 
@@ -17,16 +19,12 @@ mongoose
   })
   .then(() => {
     console.log("db connection est ablished");
+    seedRoles();
   })
   .catch((err) => {
     console.log(err);
   });
 const db = mongoose.connection;
-
-// db.on("error", console.error.bind(console, "MongoDB connection error:"));
-// db.once("open", function () {
-//   console.log("Connected to MongoDB");
-// });
 
 // Set up MongoDB session store
 const store = new MongoDBStore({
@@ -60,6 +58,7 @@ app.use(
 app.use(express.json());
 app.use(UserRoute);
 app.use(AuthRoute);
+app.use(AffectationRoute);
 
 // Other middleware and routes...
 
