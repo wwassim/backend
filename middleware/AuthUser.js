@@ -1,15 +1,18 @@
 const User = require("../models/User.js");
 
 exports.verifyUser = async (req, res, next) => {
-  console.log(req);
+  console.log(req.session);
   try {
     // Check if userId is stored in the session
+
     if (!req.session.userId) {
       return res.status(401).json({ msg: "Please login to your account!" });
     }
 
     // Find the user by _id stored in the session
-    const user = await User.findOne({ _id: req.session.userId });
+    const user = await User.findOne({ _id: req.session.userId }).populate(
+      "role"
+    );
 
     // If user not found
     if (!user) {
@@ -18,7 +21,7 @@ exports.verifyUser = async (req, res, next) => {
 
     // Store user id and role in request for further middleware
     req.userId = user._id;
-    req.role = user.role;
+    req.role = user.role.name;
 
     // Call next middleware
     next();
@@ -40,7 +43,7 @@ exports.adminOnly = async (req, res, next) => {
     }
 
     // Check if the user is an admin
-    if (user.role !== "admin") {
+    if (user.role !== "magasinier") {
       return res.status(403).json({ msg: "Access forbidden" });
     }
 

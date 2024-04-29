@@ -32,7 +32,7 @@ exports.Me = async (req, res) => {
     }
     const user = await User.findOne({
       _id: req.session.userId,
-    });
+    }).populate("role");
 
     // If user not found
     if (!user) {
